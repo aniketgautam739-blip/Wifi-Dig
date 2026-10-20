@@ -1,0 +1,21 @@
+* Educational buck converter reference netlist (verify before using)
+* Idealized switch model; not a production design or a hardware safety design.
+.param VIN=12
+.param DUTY=0.40
+.param FSW=25k
+.param TPER={1/FSW}
+V1 in 0 {VIN}
+* Pulse source approximates switch control; small finite rise/fall times
+Vgate gate 0 PULSE(0 5 0 20n 20n {DUTY*TPER} {TPER})
+S1 in sw gate 0 SWMOD
+.model SWMOD SW(Ron=0.03 Roff=1Meg Vt=2.5 Vh=0.1)
+D1 0 sw DMOD
+.model DMOD D(Is=1n Rs=0.02 N=1.2)
+L1 sw out 68u
+C1 out 0 220u
+Rload out 0 10
+.tran 0 10m 0 1u
+.meas TRAN VOUT_AVG AVG V(out) FROM=8m TO=10m
+.meas TRAN VOUT_MAX MAX V(out) FROM=8m TO=10m
+.meas TRAN VOUT_MIN MIN V(out) FROM=8m TO=10m
+.end
